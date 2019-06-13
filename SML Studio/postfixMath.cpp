@@ -34,7 +34,9 @@ void postfixMath::convert()
 		{
 			if (symbol == '(')//если символ левая скобка
 			{
-				postfixStack.push(symbol);	//запихиваем символ	в стек		
+				postfixStack.push(symbol);	//запихиваем символ	в стек	
+				i++;
+				continue;
 			}
 			if (symbol == ')')
 			{
@@ -43,6 +45,7 @@ void postfixMath::convert()
 					postfixStack.pop(stackSymb);
 					postfix += stackSymb;
 				}
+
 				postfixStack.pop(stackSymb);
 			}
 			else 
