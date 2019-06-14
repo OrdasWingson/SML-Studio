@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "postfixMath.h"
+#include <iostream>
+using std::cout;//убрать потом
 
 
 
@@ -15,7 +17,7 @@ postfixMath::postfixMath(string mathWord):
 
 postfixMath::~postfixMath()
 {
-
+	delete[] infixPtr;
 }
 
 void postfixMath::convert()
@@ -32,6 +34,8 @@ void postfixMath::convert()
 		symbol = infix[i];//сохраняем первый символ в переменную
 		if (!isdigit(symbol)) //если символ не является цифрой
 		{
+			postfix += ' ';
+			
 			if (symbol == '(')//если символ левая скобка
 			{
 				postfixStack.push(symbol);	//запихиваем символ	в стек	
@@ -85,48 +89,13 @@ void postfixMath::convert()
 		if (stackSymb == '(') continue;
 		postfix += stackSymb; // добавляем в постфикс
 	}
+	separator(postfix);
 }
 
 
-void postfixMath::convertToPostfix()
+
+void postfixMath::solution()
 {
-	char symbol; //символ
-	char stackSymb; //символ в стеке
-	int i = 0; //итератор
-	int ip = 0; //итератор постфикса
-	infix = infix + ')'; //вносим скобку в ификснй массив для указания конца строки
-	postfixStack.push('('); //вносим скобку в стек для указания конца стека
-
-	while (!postfixStack.isStackEmpty())//пока стек не пуст
-	{
-		symbol = infix[i];//сохраняем первый символ в переменную
-		
-		if (isOperator(symbol))//если символ не оператор
-		{
-			if (symbol == '(')//если символ правая скобка
-			{
-				postfixStack.push(symbol);	//запихиваем символ	в стек		
-			}
-			else
-			{
-				postfixStack.pop(stackSymb); //выталкиваем символ из стека
-				while (precedence(symbol, stackSymb) != -1)
-				{
-					postfixStack.pop(postfix[ip]);
-					ip++;
-				}
-				postfixStack.push(stackSymb);
-			}
-		}
-		else
-		{
-			postfix += infix[i];
-			
-		}
-
-
-		i++;
-	}
 
 }
 
@@ -166,6 +135,40 @@ int postfixMath::precedence(char symbOperation, char symbStack)
 	if (symbOperationHeirarchy == symbStackHeirarchy) return 0;
 	if (symbOperationHeirarchy > symbStackHeirarchy) return 1;
 
+}
+
+string* postfixMath::separator(string equation)
+{
+	string *operandArray = new string[equation.size()]; //массив указателей
+	string separated = ""; 
+	int iter = 0;
+	for (int i = 0; i <= equation.size(); i++)
+	{
+		if (isdigit(equation[i]))
+		{
+			separated += equation[i];
+		}
+		else
+		{	
+			if (separated != "")
+			{
+				operandArray[iter] = separated;
+				iter++;
+			}
+			
+			operandArray[iter] = equation[i];
+			separated = "";
+			iter++;
+		}
+	}	
+	iter = 0;	
+	while (operandArray[iter] != "\0")
+	{
+		cout << "\n "+ operandArray[iter];
+		iter++;
+	}
+	return operandArray;
+	
 }
 
 string postfixMath::getPostfix()

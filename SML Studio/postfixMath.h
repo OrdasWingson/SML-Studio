@@ -11,11 +11,13 @@ public:
 	postfixMath(string);
 	~postfixMath();
 
-	void convertToPostfix();
+	void solution();
 	string getPostfix();
 	void convert();
+
 private:
 	const string expression;
+	string* infixPtr;
 	string infix;
 	string postfix;
 	Stack<char> postfixStack;
@@ -23,6 +25,7 @@ private:
 	//вспомогательные функции
 	bool isOperator(char);
 	int precedence(char, char);
+	string* separator(string);
 };
 
 #endif
