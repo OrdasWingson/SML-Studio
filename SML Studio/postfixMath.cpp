@@ -89,7 +89,15 @@ void postfixMath::convert()
 		if (stackSymb == '(') continue;
 		postfix += stackSymb; // добавляем в постфикс
 	}
-	separator(postfix);
+	
+	infixPtr = separator(postfix);
+
+	int iter = 0;
+	while (infixPtr[iter] != "\0")
+	{
+		cout << "\n " + infixPtr[iter];
+		iter++;
+	}
 }
 
 
@@ -139,34 +147,35 @@ int postfixMath::precedence(char symbOperation, char symbStack)
 
 string* postfixMath::separator(string equation)
 {
-	string *operandArray = new string[equation.size()]; //массив указателей
+	string *operandArray = new string[equation.size()+1]; //массив указателей
 	string separated = ""; 
 	int iter = 0;
-	for (int i = 0; i <= equation.size(); i++)
+	for (int i = 0; i <= equation.size(); i++) //проходим по постфиксному массиву
 	{
-		if (isdigit(equation[i]))
+		if (isdigit(equation[i])) //если элемент - число
 		{
-			separated += equation[i];
+			separated += equation[i];	//добавляем в сепаратор		
 		}
 		else
 		{	
-			if (separated != "")
+			if (separated != "") //если сепаратор не пуст
 			{
-				operandArray[iter] = separated;
+				operandArray[iter] = separated; //добавляем число в указатель
 				iter++;
 			}
 			
-			operandArray[iter] = equation[i];
+			separated = equation[i];
+			if (separated != " ")
+			{
+				operandArray[iter] = equation[i];
+				iter++;
+			}	
 			separated = "";
-			iter++;
+			
 		}
-	}	
-	iter = 0;	
-	while (operandArray[iter] != "\0")
-	{
-		cout << "\n "+ operandArray[iter];
-		iter++;
 	}
+
+	
 	return operandArray;
 	
 }

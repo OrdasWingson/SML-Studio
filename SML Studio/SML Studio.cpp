@@ -8,7 +8,7 @@ using namespace std;
 int main()
 {
 	setlocale(LC_ALL, "Rus");
-	postfixMath post("(66+22)*5-8/4");
+	postfixMath post("1-2*(18-5)+3/3"); //"(66+22)*5-8/4"
 	post.convert();
 	cout << "-> " << post.getPostfix() << '\n';
 	//postfixMath post2("1-2*(8-5)+3/3"); //-4

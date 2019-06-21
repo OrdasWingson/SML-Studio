@@ -12,20 +12,20 @@ public:
 	~postfixMath();
 
 	void solution();
-	string getPostfix();
-	void convert();
-
+	string getPostfix();	
+	void convert(); //функция перехода из инфиксного в постфиксный
 private:
-	const string expression;
-	string* infixPtr;
+	const string expression; //выражение
+	string* infixPtr; //указатель для хранения сепарировного выражения - возможно не нужен
 	string infix;
 	string postfix;
-	Stack<char> postfixStack;
+	Stack<char> postfixStack; //стек обработкаи из инфиксного в постфиксное выражение
 
 	//вспомогательные функции
-	bool isOperator(char);
-	int precedence(char, char);
-	string* separator(string);
+	bool isOperator(char); // является ли оператором символ
+	int precedence(char, char); //сравнение старшинства знаков
+	string* separator(string); //сепаратор чисел
+	
 };
 
 #endif
