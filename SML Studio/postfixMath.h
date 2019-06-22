@@ -20,11 +20,14 @@ private:
 	string infix;
 	string postfix;
 	Stack<char> postfixStack; //стек обработкаи из инфиксного в постфиксное выражение
+	Stack<int> solutionStack; //стек для вычисления результата
 
 	//вспомогательные функции
+
 	bool isOperator(char); // является ли оператором символ
 	int precedence(char, char); //сравнение старшинства знаков
 	string* separator(string); //сепаратор чисел
+	bool is_integer(const string &); //проверка является ли строка числом
 	
 };
 

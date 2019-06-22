@@ -10,8 +10,8 @@ class Stack
 public:
 	Stack();
 	~Stack();
-	void push(const NODETYPE &);
-	bool pop(NODETYPE &);
+	void push(const NODETYPE &); //запихнуть значение
+	bool pop(NODETYPE &); //вытолкнуть значение
 	bool isStackEmpty() const;
 	void printStack();
 	NODETYPE stackTop();
@@ -29,7 +29,7 @@ Stack<NODETYPE>::Stack() :
 template<typename NODETYPE>
 Stack<NODETYPE>::~Stack()
 {
-
+	
 }
 
 template<typename NODETYPE>

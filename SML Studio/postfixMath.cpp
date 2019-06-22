@@ -2,6 +2,9 @@
 #include "postfixMath.h"
 #include <iostream>
 using std::cout;//убрать потом
+#include <regex>
+using std::regex_match;
+
 
 
 
@@ -18,6 +21,7 @@ postfixMath::postfixMath(string mathWord):
 postfixMath::~postfixMath()
 {
 	delete[] infixPtr;
+
 }
 
 void postfixMath::convert()
@@ -98,13 +102,74 @@ void postfixMath::convert()
 		cout << "\n " + infixPtr[iter];
 		iter++;
 	}
+	solution();
 }
 
 
-
+//функция вычисления результата
 void postfixMath::solution()
 {
+	int iter = 0;
+	string sign = "+-*/%";
+	int operand;
+	int x;
+	int y;
 
+	while (infixPtr[iter][0] != '\0')
+	{
+		if (is_integer(infixPtr[iter]))
+		{			
+			solutionStack.push(std::stoi(infixPtr[iter]));
+		}
+		else
+		{
+			solutionStack.pop(y);
+			solutionStack.pop(x);
+			for (int i = 0; i < sign.size(); i++)
+			{
+				if (infixPtr[iter][0] == sign[i])
+				{
+					operand = i;
+					break;
+				}
+				
+			}
+
+			switch (operand)
+			{
+			case 0:
+			{
+				solutionStack.push(x + y);
+				break;
+			}
+			case 1:
+			{
+				solutionStack.push(x - y);
+				break;
+			}
+			case 2:
+			{
+				solutionStack.push(x * y);
+				break;
+			}
+			case 3:
+			{
+				solutionStack.push(x / y);
+				break;
+			}
+			default:
+				break;
+			}			
+		}
+		iter++;
+	}
+	cout << "\nsolution is " << solutionStack.stackTop() << "\n";
+	
+}
+
+bool postfixMath::is_integer(const string & s)
+{
+	return regex_match(s, std::regex("-?[0-9]+([.][0-9]+)?"));
 }
 
 //определяет является ли цифрой
@@ -175,7 +240,6 @@ string* postfixMath::separator(string equation)
 		}
 	}
 
-	
 	return operandArray;
 	
 }

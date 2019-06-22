@@ -8,14 +8,10 @@ using namespace std;
 int main()
 {
 	setlocale(LC_ALL, "Rus");
-	postfixMath post("1-2*(18-5)+3/3"); //"(66+22)*5-8/4"
+	postfixMath post("1-2*(18-5)+6/3"); //"(66+22)*5-8/4"//-24
 	post.convert();
-	cout << "-> " << post.getPostfix() << '\n';
-	//postfixMath post2("1-2*(8-5)+3/3"); //-4
-	//post2.convert();
-	//cout << "-> " << post2.getPostfix() << '\n';
-	
-	//post.separator("(62+332)*15-128/24");
+	postfixMath post2("(66+22)*5-8/4"); //-4
+	post2.convert();	
 
 	system("pause");
     return 0;
