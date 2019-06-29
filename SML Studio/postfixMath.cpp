@@ -28,18 +28,44 @@ void postfixMath::convert()
 {
 	char symbol; //символ
 	char stackSymb; //символ в стеке
+	string tempInfix = "";
 	int i = 0; //итератор
 	int ip = 0; //итератор постфикса
 	infix += ')'; //вносим скобку в ификснй массив для указания конца строки
 	postfixStack.push('('); //вносим скобку в стек для указания конца стека
+
+	while (infix[i] != '\0')//обработка инфикса для отсеевания знаков вычитания
+	{
+		if (infix[i] == '-') //если встречается знак разности он заменяется на умножение на минус один
+		{
+			tempInfix += "+-1*";
+		}
+		else
+		{
+			tempInfix += infix[i];
+		}
+		i++;
+	}
+	infix = tempInfix;
+	i = 0;
 
 	while (infix[i] !='\0')//пока стек не пуст !postfixStack.isStackEmpty()
 	{
 		symbol = infix[i];//сохраняем первый символ в переменную
 		if (!isdigit(symbol)) //если символ не является цифрой
 		{
+
 			postfix += ' ';
-			
+			/*замена на вычитания на сложение с отрицательным числом*/
+			if (symbol == '-')
+			{
+				postfix += '-';
+				//symbol = '+';	
+				i++;
+				continue;
+				
+			}
+			//--------------------------------------
 			if (symbol == '(')//если символ левая скобка
 			{
 				postfixStack.push(symbol);	//запихиваем символ	в стек	
@@ -110,7 +136,7 @@ void postfixMath::convert()
 void postfixMath::solution()
 {
 	int iter = 0;
-	string sign = "+-*/%";
+	string sign = "+*/%";
 	int operand;
 	int x;
 	int y;
@@ -144,15 +170,10 @@ void postfixMath::solution()
 			}
 			case 1:
 			{
-				solutionStack.push(x - y);
-				break;
-			}
-			case 2:
-			{
 				solutionStack.push(x * y);
 				break;
 			}
-			case 3:
+			case 2:
 			{
 				solutionStack.push(x / y);
 				break;
@@ -175,7 +196,7 @@ bool postfixMath::is_integer(const string & s)
 //определяет является ли цифрой
 bool postfixMath::isOperator(char symb)
 {
-	char sign[6] = "+-*/%";
+	char sign[6] = "+*/%";
 	if (strchr(sign, symb) != 0)
 		return true;
 	else
@@ -186,7 +207,7 @@ bool postfixMath::isOperator(char symb)
 int postfixMath::precedence(char symbOperation, char symbStack)
 {
 	string sign = "+-*/%";
-	int hierarchyArray[] = { 0,0,1,1,2 };
+	int hierarchyArray[] = { 0,1,1,2 };
 	int symbOperationHeirarchy;
 	int symbStackHeirarchy;
 
@@ -217,7 +238,7 @@ string* postfixMath::separator(string equation)
 	int iter = 0;
 	for (int i = 0; i <= equation.size(); i++) //проходим по постфиксному массиву
 	{
-		if (isdigit(equation[i])) //если элемент - число
+		if (isdigit(equation[i]) || equation[i] == '-') //если элемент - число или знак разности
 		{
 			separated += equation[i];	//добавляем в сепаратор		
 		}

@@ -28,6 +28,7 @@ private:
 	int precedence(char, char); //сравнение старшинства знаков
 	string* separator(string); //сепаратор чисел
 	bool is_integer(const string &); //проверка является ли строка числом
+	//bool haveOlderOperator(); //проверка на наличие ставрших операторов
 	
 };
 
