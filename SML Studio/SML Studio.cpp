@@ -6,17 +6,28 @@
 #include <iostream>
 using namespace std;
 #include "postfixMath.h"
+#include "compiler.h"
 
-int main()
+int main(int argc, char *argv[])
 {
 	setlocale(LC_ALL, "Rus");
-	postfixMath post("1-2*(18-5)+6/3"); //"(66+22)*5-8/4"//-23
-	post.convert();
-	postfixMath post2("8/4-(15+3)*2"); //-34
-	post2.convert();
-	postfixMath post3("7-5+2-6+8-5-5+4+1"); //1 "5-4/4+2-2*(2-1+3)"-2
-	post3.convert();
-
+	string path;
+	
+	try 
+	{
+		if(argv[1] == NULL)
+			throw "File Not Found";
+		path = (argv[1]);
+		
+	}
+	catch(char *str)
+	{
+		cout << str << endl;
+		path = "C:\\Users\\Иван\\Desktop\\helloworld.txt"; 
+	}
+	
+	compiler compilerSML(path);
+	compilerSML.start();
 	system("pause");
     return 0;
 }

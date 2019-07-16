@@ -10,21 +10,19 @@ using std::regex_match;
 
 
 
-
-postfixMath::postfixMath(string mathWord):
-	expression(mathWord)
+postfixMath::postfixMath():
+	postfix("")
 {
-	infix = mathWord;
-
+	
 }
 
 postfixMath::~postfixMath()
 {
-	delete[] infixPtr;
+	delete[] postfixPtr;
 
 }
 
-void postfixMath::convert()
+string* postfixMath::convert(string infix)
 {
 	char symbol; //символ
 	char stackSymb; //символ в стеке
@@ -52,15 +50,14 @@ void postfixMath::convert()
 	while (infix[i] !='\0')//пока стек не пуст !postfixStack.isStackEmpty()
 	{
 		symbol = infix[i];//сохраняем первый символ в переменную
-		if (!isdigit(symbol)) //если символ не является цифрой
+		if (!isdigit(symbol) && !isalpha(symbol)) //если символ не является цифрой //!isdigit(symbol) isOperator(symbol)
 		{
 
 			postfix += ' ';
 			/*замена на вычитания на сложение с отрицательным числом*/
 			if (symbol == '-')
 			{
-				postfix += '-';
-				//symbol = '+';	
+				postfix += '-';	
 				i++;
 				continue;
 				
@@ -120,20 +117,31 @@ void postfixMath::convert()
 		postfix += stackSymb; // добавляем в постфикс
 	}
 	
-	infixPtr = separator(postfix);
+	postfixPtr = separator(postfix);
+	//postfix = "";
+	//int iter = 0;
+	//while (postfixPtr[iter] != "\0")
+	//{
+	//	postfix += postfixPtr[iter];
+	//	iter++;
+	//}
 
-	int iter = 0;
-	while (infixPtr[iter] != "\0")
-	{
-		cout << "\n " + infixPtr[iter];
-		iter++;
-	}
-	solution();
+	//cout << " HERE -> " << postfix << '\n';
+	return postfixPtr;
 }
 
 
+int postfixMath::getAswer(string mathEquation)
+{
+	
+	// you need include <algorithm> to use general algorithms like std::remove()
+	mathEquation.erase(std::remove(mathEquation.begin(), mathEquation.end(), ' '), mathEquation.end());
+		
+	return solution(convert(mathEquation));
+}
+
 //функция вычисления результата
-void postfixMath::solution()
+int postfixMath::solution(string *equation)
 {
 	int iter = 0;
 	string sign = "+*/%";
@@ -141,11 +149,11 @@ void postfixMath::solution()
 	int x;
 	int y;
 
-	while (infixPtr[iter][0] != '\0')
+	while (equation[iter][0] != '\0')
 	{
-		if (is_integer(infixPtr[iter]))
+		if (is_integer(equation[iter]))
 		{			
-			solutionStack.push(std::stoi(infixPtr[iter]));
+			solutionStack.push(std::stoi(equation[iter]));
 		}
 		else
 		{
@@ -153,7 +161,7 @@ void postfixMath::solution()
 			solutionStack.pop(x);
 			for (int i = 0; i < sign.size(); i++)
 			{
-				if (infixPtr[iter][0] == sign[i])
+				if (equation[iter][0] == sign[i])
 				{
 					operand = i;
 					break;
@@ -184,8 +192,8 @@ void postfixMath::solution()
 		}
 		iter++;
 	}
-	cout << "\nsolution is " << solutionStack.stackTop() << "\n";
-	
+	//cout << "\nsolution is " << solutionStack.stackTop() << "\n";
+	return solutionStack.stackTop();
 }
 
 bool postfixMath::is_integer(const string & s)
@@ -265,8 +273,16 @@ string* postfixMath::separator(string equation)
 	
 }
 
-string postfixMath::getPostfix()
+string postfixMath::getPostfix(string mathEquation)
 {
+	string* convertedPostfix = convert(mathEquation);
+	postfix = "";
+	int iter = 0;
+	while (convertedPostfix[iter] != "\0")
+	{
+		postfix += convertedPostfix[iter] + " ";
+		iter++;
+	}
 	return postfix;
 }
 
