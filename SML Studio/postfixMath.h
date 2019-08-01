@@ -4,15 +4,20 @@
 #include "Stack.h"
 #include <string>
 using std::string;
+#include <list>
+using std::list;
+#include"tableEntry.h"
 
 class postfixMath
 {
 public:
 	postfixMath();
 	~postfixMath();
-	int getAswer(string);	
-	string getPostfix(string);	
-	
+	int getAswer(string); //используется для получения ответа выражения	
+	string getPostfix(string);	//используется для обработки SML выражения
+	bool isNumber(string); //функция проверки является ли токен числом для действительных чисел
+	bool isOperator(char); // является ли оператором символ	
+
 private:
 	const string expression; //выражение
 	string* postfixPtr; //указатель для хранения сепарировного выражения
@@ -22,9 +27,9 @@ private:
 
 	//вспомогательные функции
 
-	string* convert(string); //функция перехода из инфиксного в постфиксный
-	int solution(string*);
-	bool isOperator(char); // является ли оператором символ
+	string* convert(string); //функция перехода из инфиксного в постфиксный						 
+	string* convertSml(string); //функция перехода из инфиксного в постфиксный для кодировки SML языка
+	int solution(string*);	
 	int precedence(char, char); //сравнение старшинства знаков
 	string* separator(string); //сепаратор чисел
 	bool is_integer(const string &); //проверка является ли строка числом

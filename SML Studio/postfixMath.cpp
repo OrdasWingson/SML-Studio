@@ -24,6 +24,7 @@ postfixMath::~postfixMath()
 
 string* postfixMath::convert(string infix)
 {
+	postfix = "";
 	char symbol; //символ
 	char stackSymb; //символ в стеке
 	string tempInfix = "";
@@ -130,6 +131,83 @@ string* postfixMath::convert(string infix)
 	return postfixPtr;
 }
 
+string * postfixMath::convertSml(string infix)
+{
+	postfix = "";
+	char symbol; //символ
+	char stackSymb; //символ в стеке
+	int i = 0; //итератор
+	int ip = 0; //итератор постфикса
+	infix += ')'; //вносим скобку в ификснй массив для указания конца строки
+	postfixStack.push('('); //вносим скобку в стек для указания конца стека
+
+
+	while (infix[i] != '\0')//пока стек не пуст !postfixStack.isStackEmpty()
+	{
+		symbol = infix[i];//сохраняем первый символ в переменную
+		if (!isdigit(symbol) && !isalpha(symbol)) //если символ не является цифрой //!isdigit(symbol) isOperator(symbol)
+		{
+
+			postfix += ' ';
+
+			if (symbol == '(')//если символ левая скобка
+			{
+				postfixStack.push(symbol);	//запихиваем символ	в стек	
+				i++;
+				continue;
+			}
+			if (symbol == ')')
+			{
+				while (isOperator(postfixStack.stackTop()) || postfixStack.stackTop() != '(') //если символ знак операции
+				{
+					postfixStack.pop(stackSymb);
+					postfix += stackSymb;
+				}
+
+				postfixStack.pop(stackSymb);
+			}
+			else
+			{
+				while (true)
+				{
+					if (isOperator(postfixStack.stackTop())) //если символ знак операции
+					{
+						if (precedence(symbol, postfixStack.stackTop()) < 0) //сравниваем по иерархии операции
+						{
+							postfixStack.pop(stackSymb); //выталкивеаем если операция равна или больше по иерархии
+							postfix += stackSymb; // добавляем в постфикс
+						}
+						else
+						{
+							postfixStack.push(symbol);
+							break;
+						}
+					}
+					else
+					{
+						postfixStack.push(symbol);
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			postfix += symbol;
+		}
+		i++;
+	}
+	while (!postfixStack.isStackEmpty())
+	{
+		postfixStack.pop(stackSymb); //выталкивеаем если операция равна или больше по иерархии
+		if (stackSymb == '(') continue;
+		postfix += stackSymb; // добавляем в постфикс
+	}
+
+	postfixPtr = separator(postfix);
+	return postfixPtr;
+}
+
 
 int postfixMath::getAswer(string mathEquation)
 {
@@ -196,15 +274,22 @@ int postfixMath::solution(string *equation)
 	return solutionStack.stackTop();
 }
 
+
+
 bool postfixMath::is_integer(const string & s)
 {
 	return regex_match(s, std::regex("-?[0-9]+([.][0-9]+)?"));
 }
 
+bool postfixMath::isNumber(string token)
+{
+	return regex_match(token, std::regex(("((\\+|-)?[[:digit:]]+)(\\.(([[:digit:]]+)?))?")));
+}
+
 //определяет является ли цифрой
 bool postfixMath::isOperator(char symb)
 {
-	char sign[6] = "+*/%";
+	char sign[6] = "+-*/%";
 	if (strchr(sign, symb) != 0)
 		return true;
 	else
@@ -215,7 +300,7 @@ bool postfixMath::isOperator(char symb)
 int postfixMath::precedence(char symbOperation, char symbStack)
 {
 	string sign = "+-*/%";
-	int hierarchyArray[] = { 0,1,1,2 };
+	int hierarchyArray[] = { 0,0,1,2 };
 	int symbOperationHeirarchy;
 	int symbStackHeirarchy;
 
@@ -275,7 +360,9 @@ string* postfixMath::separator(string equation)
 
 string postfixMath::getPostfix(string mathEquation)
 {
-	string* convertedPostfix = convert(mathEquation);
+	//убираем пробелы из строки
+	mathEquation.erase(std::remove(mathEquation.begin(), mathEquation.end(), ' '), mathEquation.end());
+	string* convertedPostfix = convertSml(mathEquation);
 	postfix = "";
 	int iter = 0;
 	while (convertedPostfix[iter] != "\0")

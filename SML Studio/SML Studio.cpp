@@ -12,7 +12,8 @@ int main(int argc, char *argv[])
 {
 	setlocale(LC_ALL, "Rus");
 	string path;
-	
+	compiler compilerSML;
+
 	try 
 	{
 		if(argv[1] == NULL)
@@ -26,8 +27,8 @@ int main(int argc, char *argv[])
 		path = "C:\\Users\\Иван\\Desktop\\helloworld.txt"; 
 	}
 	
-	compiler compilerSML(path);
-	compilerSML.start();
+	
+	compilerSML.start(path);
 	system("pause");
     return 0;
 }
