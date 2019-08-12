@@ -19,17 +19,17 @@ int main(int argc, char *argv[])
 		if(argv[1] == NULL)
 			throw "File Not Found";
 		path = (argv[1]);
+		compilerSML.start(path);		
+		return 0;
 		
 	}
 	catch(char *str)
 	{
 		cout << str << endl;
-		path = "C:\\Users\\Иван\\Desktop\\helloworld.txt"; 
+		path = "C:\\Users\\Иван\\Desktop\\sml\\inc.sc"; //диагностика
+		//return 1;
 	}
-	
-	
 	compilerSML.start(path);
-	system("pause");
-    return 0;
+	return 0;
 }
 

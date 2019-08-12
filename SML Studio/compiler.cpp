@@ -47,14 +47,19 @@ void compiler::start(string path)
 	else
 	{
 		string s; // сюда будем класть считанные строки
+		int count = 1;//номер строки
 		while (getline(fReader, s)) { // пока не достигнут конец файла класть очередную строку в переменную (s)
-			cout << s << endl; // и снова вывожу на экран но уже модифицированную строку (без записи ее в файл)
-			handleCode(s); //передаем строку обработчику			
+			//cout << s << endl; // и снова вывожу на экран но уже модифицированную строку (без записи ее в файл)
+			if (s == "") continue;
+			string sentece = std::to_string(count) + " " + s;
+			handleCode(sentece); //передаем строку обработчику	
+			count++;
 		}
 		secondHandlCode();
 		printTable();
 		printArraySml();
-		saveCode("C:\\Users\\Иван\\Desktop\\sml.sml");
+		saveCode(fPath);
+
 	}
 	fReader.close(); 
 }
@@ -114,27 +119,17 @@ void compiler::handleCode(string stringOfCode)
 				}
 				else //если есть в таблице то берем ее локейшн
 				{
-					locationVarible += getSymbLockation(*word);
+					locationVarible += getSymbLockation(*word, 'V');
 				}
 				strtok(NULL, " "); //убирается знак равно
 				char* equation = strtok(NULL, "\r"); //получаем выражение стоящее за символом равно для дальнейшей обработки
 				char* postfixEquation = strToChr(postfix.getPostfix(equation));//получаем постфиксное вырожение
-				/*cout << postfixEquation << " < - - - \n";*/
+				cout << postfixEquation << " < - - - \n";
 				/*добовляем в таблицу символов оставшиеся символы*/		
 				word = strtok(equation, " "); 		
 				while (word != NULL) //пока токен не пуст
 				{
 					addToTable(word);
-					//if(postfix.isNumber(word))
-					//{
-					//	symbolTable.push_back(tableEntry(atoi(word), 'C', varItter)); //добавляем в таблицу
-					//	varItter--;
-					//}
-					//else 
-					//{
-					//	//неинициализированая переменная
-					//	
-					//}
 					
 					word = strtok(NULL, " ");					
 				}
@@ -145,16 +140,16 @@ void compiler::handleCode(string stringOfCode)
 				{
 					if (isalpha(*word))
 					{
-						stack.push(getSymbLockation(*word)); //если токен переменная добавляем его в стек
+						stack.push(getSymbLockation(*word, 'V')); //если токен переменная добавляем его в стек
 					}
 					else if (postfix.isNumber(word))
 					{
-						stack.push(getSymbLockation(atoi(word))); //если токен цифра добавляем в стек
+						stack.push(getSymbLockation(atoi(word),'C')); //если токен цифра добавляем в стек
 					}
 					else if(postfix.isOperator(*word))
 					{
 						//выясняем какой оператор в переменной 
-						string sign = "+*/-";
+						string sign = "+/*-";
 						int operatorSml = 0;
 						for (int i = 0; i < sign.size(); i++)
 						{
@@ -169,12 +164,12 @@ void compiler::handleCode(string stringOfCode)
 								}
 								case 1: //деление
 								{
-									operatorSml = 33 * BIT_NUMBER;
+									operatorSml = 32 * BIT_NUMBER;
 									break;
 								}
 								case 2: //умножение
 								{
-									operatorSml = 32 * BIT_NUMBER;
+									operatorSml = 33 * BIT_NUMBER;
 									break;
 								}
 								case 3: //вычитание
@@ -211,25 +206,28 @@ void compiler::handleCode(string stringOfCode)
 			{
 				int addres; //адрес ячейки перехода
 				char *operatorBool;
-				word = strtok(NULL, " "); // получаем первую переменную
+				word = strtok(NULL, " "); // получаем первую переменную				
 				Sml[comandItter++] = 20 * BIT_NUMBER + getSymbLockation(*word); //добавляем переменую в аккомулятор (добавить проверку наличия переменной
 				
 				operatorBool = strtok(NULL, " "); //получаем операцию
-				word = strtok(NULL, " ");// получаем вторую переменную
-
+				word = strtok(NULL, " ");// получаем вторую переменную				
 				if (!equalSymbols(*word)) //если нет символа в таблице то добавляем его
 				{
-					addToTable(word);
+					addToTable(word); //ошибка при распозновании переменной и флага
 				}
 
-				Sml[comandItter++] = 31 * BIT_NUMBER + getSymbLockation(*word); //вычитаем символ из аккомулятора
-
+				Sml[comandItter++] = 31 * BIT_NUMBER + getSymbLockation(getNumbOfSymb(word)); //вычитаем символ из аккомулятора
+				
 				word = strtok(NULL, " "); //здесь мы пропускаем goto
 				addres = atoi(strtok(NULL, " ")); //получаем адресс
-				if (!equalSymbols(addres, 'L'))
+				if (!equalSymbols(addres, 'F'))
 				{
 					flags[comandItter] = addres;
 					addres = 0;
+				}
+				else
+				{
+					addres = getSymbLockation(addres, 'F');
 				}
 				
 				if (strcmp(operatorBool, "==") == 0) //получаем операцию
@@ -240,18 +238,22 @@ void compiler::handleCode(string stringOfCode)
 				{
 					Sml[comandItter++] = 41 * BIT_NUMBER + addres; //если минус
 				}
+				else if (strcmp(operatorBool, ">") == 0)
+				{
+
+				}
 
 				break;
 			}
 			case 4: //goto
-			{
-				int addres = atoi(strtok(NULL, " ")); //получаем адресс
-				if (!equalSymbols(addres, 'L'))
+			{				
+				int index = atoi(strtok(NULL, " ")); //получаем адресс
+				if (!equalSymbols(index, 'F'))
 				{
-					flags[comandItter] = addres;
-					addres = 0;
+					flags[comandItter] = index;
+					index = 0;
 				}
-				Sml[comandItter++] = 40 * BIT_NUMBER + addres; //переходим по адресу
+				Sml[comandItter++] = 40 * BIT_NUMBER + getSymbLockation(index); //переходим по адресу
 				break;
 			}
 			case 5: //print
@@ -270,6 +272,57 @@ void compiler::handleCode(string stringOfCode)
 				Sml[comandItter++] = 43 * BIT_NUMBER;
 				break;
 			}
+			case 7: //flag
+			{
+				word = strtok(NULL, " "); // получаем имя флага
+				symbolTable.push_back(tableEntry(atoi(word), 'F', comandItter)); //добавляем в таблицу
+				break;
+			}
+			case 8: //var
+			{
+				word = strtok(NULL, " "); // получаем имя переменной
+				int varAdr = 0;
+				if (!equalSymbols(*word))
+				{
+					varAdr = varItter--;
+					symbolTable.push_back(tableEntry(*word, 'V', varAdr)); //добавляем в таблицу
+				}
+				else
+				{
+					varAdr = getSymbLockation(*word, 'V');
+				}
+				
+				//доработать вар
+				word = strtok(NULL, " "); //убираем равно
+				word = strtok(NULL, " ");//получаем переменную
+				if (isalpha(*word))
+				{
+					Sml[comandItter++] = 20 * BIT_NUMBER + getSymbLockation(*word, 'V');
+					Sml[comandItter++] = 21 * BIT_NUMBER + varAdr;
+				}
+				else
+				{
+					Sml[varAdr] = atoi(word);
+				}
+				
+				break;
+			}
+			case 9: //text
+			{
+				Sml[comandItter] = 13 * BIT_NUMBER + varItter;
+
+				word = strtok(NULL, ";"); // получаем слово
+				//здесь посимвольно добавляем данные
+				int i = 0;
+				while (word[i] != NULL)
+				{
+					Sml[varItter--] = word[i];
+					i++;
+				}
+				Sml[varItter--] = 0;
+				comandItter++;
+				break;
+			}
 			default:
 				break;
 			}
@@ -283,13 +336,17 @@ void compiler::handleCode(string stringOfCode)
 
 void compiler::saveCode(string path)
 {
-	ofstream fWriter(path, ios::out | ios::binary);
+	string newNemePath = path;
+	int indx = newNemePath.find('.');
+	newNemePath = newNemePath.substr(0, indx)+".SML";
+	ofstream fWriter(newNemePath, ios::out | ios::binary);
 	if (fWriter.is_open())
 	{
 		for (int i = 0; i < BIT_NUMBER; i++)
 		{
-			fWriter << Sml[i] << "\t";
+			fWriter << Sml[i] << " ";
 		}
+		fWriter << "\0";
 	}
 	fWriter.close();
 }
@@ -375,8 +432,21 @@ int compiler::getSymbLockation(int symb)
 	return 0;
 }
 
+int compiler::getSymbLockation(int symb, char typ)
+{
+	for (auto iter = symbolTable.begin(); iter != symbolTable.end(); iter++)
+	{
+		if (iter->getSymbol() == symb && iter->getType() == typ)
+		{
+			return iter->getLockation();
+		}
+	}
+	return 0;
+}
+
 void compiler::printTable()
 {
+	//cout << "Symbol " << setw(4) << iter->getSymbol() << " Type " << iter->getType() << " Location " << iter->getLockation() << "\n";
 	for (auto iter = symbolTable.begin(); iter != symbolTable.end(); iter++)
 	{
 		cout << "Symbol " << setw(4) << iter->getSymbol() << " Type " << iter->getType() << " Location " << iter->getLockation() <<"\n";
@@ -397,14 +467,28 @@ void compiler::printArraySml()
 	cout << "\n";
 }
 
+int compiler::getNumbOfSymb(char* symb)
+{
+	if (isalnum(*symb))
+	{
+		return atoi(symb);
+	}
+	else
+	{
+		return *symb;
+	}
+	return 0;
+}
+
 void compiler::secondHandlCode()
 {
 	for (int i = 0; i < BIT_NUMBER; i++)
 	{
 		if (flags[i] != -1)
 		{
-			Sml[i] += getSymbLockation(flags[i]);
+			Sml[i] += getSymbLockation(flags[i], 'F');
 		}
+		
 	}
 }
 

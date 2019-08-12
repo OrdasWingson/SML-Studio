@@ -7,7 +7,7 @@ using std::string;
 using std::list;
 #include "tableEntry.h"
 
-#define NUMBER_OF_COMAND 7
+#define NUMBER_OF_COMAND 10
 #define BIT_NUMBER 1000
 
 class compiler
@@ -24,7 +24,7 @@ private:
 	int varItter; //итератор для переменных
 	int comandItter;//итератор для команд 
 	int Sml[BIT_NUMBER]; //код SML
-	char * comandName[NUMBER_OF_COMAND] = {"rem", "input", "let", "if", "goto", "print", "end"}; //перечисление команд
+	char * comandName[NUMBER_OF_COMAND] = {"rem", "input", "let", "if", "goto", "print", "end", "flag", "var", "text"}; //перечисление команд
 
 	void handleCode(string); //обработчик строк
 	void saveCode(string); //СОХРАНЕНИЕ в файле результатов обработчика
@@ -32,8 +32,10 @@ private:
 	bool equalSymbols(int); //поиск совпадений по таблице символов
 	bool equalSymbols(int, char); //поиск совпадений по таблице символов
 	int getSymbLockation(int); //получение номера памяти символа
+	int getSymbLockation(int, char); //получение номера памяти символа
 	void printTable(); //
 	void printArraySml();
+	int getNumbOfSymb(char*); //получает код буквы если символ буква или цифру кесли символ цифра
 	void secondHandlCode();//второй проход
 	char* strToChr(string);
 	void addToTable(char*);//добавление в таблицу символов
